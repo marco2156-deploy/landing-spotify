@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Spotify Premium | Offerta Esclusiva</title>
+    <link rel="icon" href="assets/img/logo-spotify.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 1. GOOGLE ANALYTICS 4 (Base) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TS6S5DTG91"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-TS6S5DTG91');
+
+        // Funzione per tracciare i click su GA4
+        function trackClick(piano, prezzo) {
+            gtag('event', 'click_acquista', {
+                'event_category': 'conversione',
+                'event_label': piano,
+                'value': parseFloat(prezzo.replace(',', '.').replace('€', '').trim()),
+                'currency': 'EUR'
+            });
+        }
+    </script>
+
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-green-dark: #1aa34a;
+            --spotify-dark: #121212;
+            --spotify-gray: #282828;
+            --text-white: #FFFFFF;
+            --text-gray: #B3B3B3;
+            --accent-red: #E91429;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--spotify-dark);
+            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)), url("assets/img/listing-music.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        .body-container {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+            gap: 25px;
+        }
+
+        .container-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .logo { width: 70px; height: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        h1.title { font-size: 28px; font-weight: 800; line-height: 1.2; text-transform: uppercase; letter-spacing: 1px; }
+        .title-text { color: var(--text-white); display: block; }
+        .title-discount-text { color: var(--spotify-green); font-size: 24px; display: block; margin-top: 5px; }
+
+        .container-offer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .container-offer span { font-size: 12px; font-weight: 600; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
+        .countdown { font-size: 32px; font-weight: 800; color: var(--accent-red); margin-top: 5px; font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(233, 20, 41, 0.4); }
+
+        .buttons { display: flex; flex-direction: column; gap: 25px; width: 100%; max-width: 340px; }
+        .button-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+        .button {
+            background-color: var(--spotify-gray);
+            border: none;
+            padding: 22px 20px;
+            border-radius: 16px;
+            color: var(--text-white);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.4), 0 8px 15px rgba(0,0,0,0.3);
+            min-height: 140px;
+            justify-content: center;
+            width: 100%;
+        }
+        .button:active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3); }
+        .button-primary { background: linear-gradient(135deg, var(--spotify-green) 0%, var(--spotify-green-dark) 100%); border: 2px solid rgba(255,255,255,0.2); }
+        .button-primary:active { background: linear-gradient(135deg, var(--spotify-green-dark) 0%, #15913f 100%); }
+
+        .badge {
+            background: #FF0000;
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 2px solid white;
+            margin-bottom: -15px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .subscription-period { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
+        .price-container { display: flex; align-items: center; gap: 12px; margin: 5px 0; }
+        .price-old { font-size: 16px; color: rgba(255, 255, 255, 0.6); text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--accent-red); }
+        .price-new { font-size: 32px; font-weight: 900; color: var(--text-white); text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .button-primary .price-new { color: #000; text-shadow: none; }
+
+        .cta-button {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .button-primary .cta-button { background: rgba(0,0,0,0.2); border-color: rgba(0,0,0,0.3); color: #000; }
+        .cta-button svg { width: 18px; height: 18px; stroke-width: 3; transition: transform 0.2s ease; }
+        .button:active .cta-button svg { transform: translateX(4px); }
+
+        .trust-badges { display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+        .trust-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-gray); font-weight: 600; }
+        .trust-item svg { width: 16px; height: 16px; fill: var(--spotify-green); }
+
+        #toast-container {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none;
+            width: 90%; max-width: 320px;
+        }
+        .toast {
+            background: rgba(30, 30, 30, 0.98); backdrop-filter: blur(10px); color: var(--text-white);
+            padding: 14px 18px; border-radius: 12px; border-left: 4px solid var(--spotify-green);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(30px) scale(0.95);
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.5s ease-in forwards;
+            animation-delay: 0s, 4.5s;
+        }
+        .toast-icon { width: 22px; height: 22px; background: var(--spotify-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .toast-icon::after { content: '✓'; color: black; font-weight: 900; font-size: 14px; }
+
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px) scale(0.95); } }
+
+        @media (max-width: 480px) {
+            .body-container { padding: 20px 12px; gap: 20px; }
+            h1.title { font-size: 26px; }
+            .title-discount-text { font-size: 22px; }
+            .countdown { font-size: 28px; }
+            .button { padding: 20px 15px; min-height: 130px; }
+            .subscription-period { font-size: 18px; }
+            .price-new { font-size: 28px; }
+            .cta-button { font-size: 14px; padding: 8px 25px; }
+            .badge { font-size: 11px; padding: 7px 18px; }
+        }
+        @media (max-width: 360px) {
+            h1.title { font-size: 24px; }
+            .price-new { font-size: 26px; }
+            .badge { font-size: 10px; padding: 6px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="body-container">
+        <div class="container-header">
+            <img class="logo" src="assets/img/logo-spotify.png" alt="Spotify Logo">
+            <h1 class="title">
+                <span class="title-text">Spotify Premium</span>
+                <span class="title-discount-text">Risparmia fino al 70%</span>
+            </h1>
+        </div>
+
+        <div class="container-offer">
+            <span>⚡ Offerta a tempo limitato</span>
+            <div class="countdown" id="timer">--:--:--</div>
+        </div>
+
+        <div class="buttons">
+            <div class="button-wrapper">
+                <a href="https://t.me/vexeelstore/38" class="button">
+                    <p class="subscription-period">3 Mesi</p>
+                    <div class="price-container">
+                        <span class="price-old">35,97 €</span>
+                        <span class="price-new">13,99 €</span>
+                    </div>
+                    <div class="cta-button">ACQUISTA ORA <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+            </div>
+
+            <div class="button-wrapper">
+                <span class="badge">🔥 PIÙ SCELTO</span>
+                <a href="https://t.me/vexeelstore/38" class="button button-primary">
+                    <p class="subscription-period">6 Mesi</p>
+                    <div class="price-container">
+                        <span class="price-old">71,94 €</span>
+                        <span class="price-new">24,99 €</span>
+                    </div>
+                    <div class="cta-button">ACQUISTA ORA <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+            </div>
+
+            <div class="button-wrapper">
+                <a href="https://t.me/vexeelstore/38" class="button">
+                    <p class="subscription-period">12 Mesi</p>
+                    <div class="price-container">
+                        <span class="price-old">143,88 €</span>
+                        <span class="price-new">34,99 €</span>
+                    </div>
+                    <div class="cta-button">ACQUISTA ORA <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+            </div>
+        </div>
+
+        <div class="trust-badges">
+            <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Attivazione immediata</div>
+            <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Pagamento sicuro</div>
+            <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Assistenza 24/7</div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- 2. SCRIPT TOAST NOTIFICATIONS -->
+    <script>
+        const nomi = ["Leonardo", "Sofia", "Francesco", "Giulia", "Alessandro", "Aurora", "Lorenzo", "Alice", "Mattia", "Beatrice", "Tommaso", "Emma", "Gabriele", "Giorgia", "Andrea", "Vittoria", "Riccardo", "Martina", "Matteo", "Chiara", "Luca", "Sara", "Marco", "Anna", "Federico", "Elena", "Davide", "Francesca", "Simone", "Alessia", "Antonio", "Rebecca", "Giuseppe", "Noemi", "Giovanni", "Elisa", "Pietro", "Valentina", "Alberto", "Lucia", "Filippo", "Maria", "Nicola", "Ginevra"];
+        const prodotti = ["3 mesi", "6 mesi", "12 mesi"];
+
+        function generaMessaggioCasuale() {
+            const nome = nomi[Math.floor(Math.random() * nomi.length)];
+            const durata = prodotti[Math.floor(Math.random() * prodotti.length)];
+            return `<strong>${nome}</strong> ha appena attivato ${durata}`;
+        }
+
+        function mostraToast(messaggio) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<div class="toast-icon"></div><span>${messaggio}</span>`;
+            container.appendChild(toast);
+            toast.addEventListener('animationend', (e) => { if (e.animationName === 'fadeOut') toast.remove(); });
+        }
+
+        function cicloToastAutomatici() {
+            setTimeout(() => { mostraToast(generaMessaggioCasuale()); cicloToastAutomatici(); }, Math.random() * 6000 + 6000);
+        }
+        setTimeout(() => { mostraToast(generaMessaggioCasuale()); cicloToastAutomatici(); }, 3000);
+    </script>
+
+    <!-- 3. SCRIPT COUNTDOWN -->
+    <script>
+        const timerDisplay = document.getElementById("timer");
+        const randomSeconds = Math.floor(Math.random() * ((4 * 60 * 60) - (2 * 60 * 60) + 1)) + (2 * 60 * 60);
+        function formatTime(seconds) {
+            const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const s = String(seconds % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+        function startCountdown(totalSeconds) {
+            let timeLeft = totalSeconds;
+            timerDisplay.textContent = formatTime(timeLeft);
+            const countdown = setInterval(() => {
+                timeLeft--;
+                if (timeLeft < 0) { clearInterval(countdown); timerDisplay.textContent = "00:00:00"; return; }
+                timerDisplay.textContent = formatTime(timeLeft);
+            }, 1000);
+        }
+        window.onload = () => { startCountdown(randomSeconds); };
+    </script>
+
+    <!-- 4. TRACKER CLICK (TELEGRAM + GA4) -->
+    <script>
+        // ⚙️ CONFIGURAZIONE TELEGRAM - SOSTITUISCI QUESTI VALORI
+        const TELEGRAM_BOT_TOKEN = '9032545807:AAFCYQpxa1iHjjcKaP3YxujyrHXsu9ticCI';
+        const TELEGRAM_CHAT_ID = '8401847041';
+
+        async function inviaNotificaTelegram(piano, prezzo) {
+            if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'INSERISCI_QUI_IL_TUO_BOT_TOKEN') {
+                console.warn("Configura il Bot Token di Telegram per ricevere le notifiche.");
+                return;
+            }
+            
+            const now = new Date();
+            const messaggio = `
+🛒 <b>NUOVO CLICK SU ACQUISTA!</b>
+📦 <b>Piano:</b> ${piano}
+💰 <b>Prezzo:</b> ${prezzo}
+⏰ <b>Ora:</b> ${now.toLocaleTimeString('it-IT')}
+📅 <b>Data:</b> ${now.toLocaleDateString('it-IT')}
+📱 <b>Device:</b> ${/Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}
+🌐 <b>Browser:</b> ${navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)/)?.[1] || 'Sconosciuto'}
+🔗 <b>Pagina:</b> ${window.location.href}
+            `.trim();
+
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: messaggio, parse_mode: 'HTML' })
+                });
+            } catch (error) {
+                console.error('Errore invio Telegram:', error);
+            }
+        }
+
+        // Applica il tracker a tutti i pulsanti
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function() {
+                const piano = this.querySelector('.subscription-period').textContent.trim();
+                const prezzo = this.querySelector('.price-new').textContent.trim();
+                
+                // 1. Invia a Google Analytics
+                if (typeof trackClick === 'function') {
+                    trackClick(piano, prezzo);
+                }
+                
+                // 2. Invia a Telegram
+                inviaNotificaTelegram(piano, prezzo);
+            });
+        });
+    </script>
+</body>
+</html>
