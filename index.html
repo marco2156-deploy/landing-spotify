@@ -293,29 +293,45 @@
         window.onload = () => { startCountdown(randomSeconds); };
     </script>
 
-    <!-- 4. TRACKER CLICK (TELEGRAM + GA4) -->
+    <!-- 4. TRACKER TELEGRAM + GA4 (VISITE E CLICK) -->
     <script>
-        // ⚙️ CONFIGURAZIONE TELEGRAM - SOSTITUISCI QUESTI VALORI
+        // ⚙️ CONFIGURAZIONE TELEGRAM
         const TELEGRAM_BOT_TOKEN = '9032545807:AAFCYQpxa1iHjjcKaP3YxujyrHXsu9ticCI';
         const TELEGRAM_CHAT_ID = '8401847041';
 
-        async function inviaNotificaTelegram(piano, prezzo) {
+        // Funzione unificata per inviare notifiche a Telegram
+        async function inviaNotificaTelegram(tipo, dettagli = {}) {
             if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'INSERISCI_QUI_IL_TUO_BOT_TOKEN') {
                 console.warn("Configura il Bot Token di Telegram per ricevere le notifiche.");
                 return;
             }
             
             const now = new Date();
-            const messaggio = `
-🛒 <b>NUOVO CLICK SU ACQUISTA!</b>
-📦 <b>Piano:</b> ${piano}
-💰 <b>Prezzo:</b> ${prezzo}
+            const userAgent = navigator.userAgent;
+            let messaggio = "";
+            
+            if (tipo === 'visita') {
+                messaggio = `
+👁️ <b>NUOVA VISITA SUL SITO!</b>
 ⏰ <b>Ora:</b> ${now.toLocaleTimeString('it-IT')}
 📅 <b>Data:</b> ${now.toLocaleDateString('it-IT')}
-📱 <b>Device:</b> ${/Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}
-🌐 <b>Browser:</b> ${navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)/)?.[1] || 'Sconosciuto'}
+📱 <b>Device:</b> ${/Mobi|Android/i.test(userAgent) ? 'Mobile' : 'Desktop'}
+🌐 <b>Browser:</b> ${userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)/)?.[1] || 'Sconosciuto'}
 🔗 <b>Pagina:</b> ${window.location.href}
-            `.trim();
+🔍 <b>Referrer:</b> ${document.referrer || 'Diretto (nessun referrer)'}
+                `.trim();
+            } else if (tipo === 'click') {
+                messaggio = `
+🛒 <b>NUOVO CLICK SU ACQUISTA!</b>
+📦 <b>Piano:</b> ${dettagli.piano}
+💰 <b>Prezzo:</b> ${dettagli.prezzo}
+⏰ <b>Ora:</b> ${now.toLocaleTimeString('it-IT')}
+📅 <b>Data:</b> ${now.toLocaleDateString('it-IT')}
+📱 <b>Device:</b> ${/Mobi|Android/i.test(userAgent) ? 'Mobile' : 'Desktop'}
+🌐 <b>Browser:</b> ${userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)/)?.[1] || 'Sconosciuto'}
+🔗 <b>Pagina:</b> ${window.location.href}
+                `.trim();
+            }
 
             try {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -328,19 +344,27 @@
             }
         }
 
-        // Applica il tracker a tutti i pulsanti
+        // 1. NOTIFICA DI VISITA (con sessionStorage per evitare spam ad ogni refresh)
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!sessionStorage.getItem('visitNotified')) {
+                inviaNotificaTelegram('visita');
+                sessionStorage.setItem('visitNotified', 'true');
+            }
+        });
+
+        // 2. NOTIFICA DI CLICK SU PULSANTI
         document.querySelectorAll('.button').forEach(button => {
             button.addEventListener('click', function() {
                 const piano = this.querySelector('.subscription-period').textContent.trim();
                 const prezzo = this.querySelector('.price-new').textContent.trim();
                 
-                // 1. Invia a Google Analytics
+                // Invia a Google Analytics
                 if (typeof trackClick === 'function') {
                     trackClick(piano, prezzo);
                 }
                 
-                // 2. Invia a Telegram
-                inviaNotificaTelegram(piano, prezzo);
+                // Invia a Telegram
+                inviaNotificaTelegram('click', { piano, prezzo });
             });
         });
     </script>
